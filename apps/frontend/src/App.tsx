@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import type { RouteSearchQuery } from "@transitroutefi/shared";
+import { LanguageToggle } from "./components/LanguageToggle";
 import { RouteMap } from "./components/RouteMap";
 import { RouteResults } from "./components/RouteResults";
 import { SearchStatus } from "./components/SearchStatus";
@@ -68,7 +69,11 @@ function App() {
 
   return (
     <main className="min-h-screen bg-transit-mist px-5 py-8 text-transit-ink sm:px-8 lg:px-10">
-      <section className="mx-auto flex w-full max-w-6xl flex-col gap-8 lg:min-h-[calc(100vh-4rem)] lg:justify-center">
+      <header className="mx-auto mb-6 flex w-full max-w-6xl justify-end">
+        <LanguageToggle />
+      </header>
+
+      <section className="mx-auto flex w-full max-w-6xl flex-col gap-8 lg:min-h-[calc(100vh-7rem)] lg:justify-center">
         <div className="max-w-4xl">
           <p className="mb-3 text-sm font-bold uppercase tracking-wide text-transit-teal">
             {t("app.eyebrow")}
