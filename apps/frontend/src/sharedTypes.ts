@@ -7,3 +7,5 @@ export type {
   StepInstruction,
   TransitLine
 } from "@transitroutefi/shared";
+
+export type { ApiErrorBody, RoutesResponse } from "./api/routes";
