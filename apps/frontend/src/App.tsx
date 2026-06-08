@@ -7,6 +7,7 @@ import { RecentSearches } from "./components/RecentSearches";
 import { RouteMap } from "./components/RouteMap";
 import { RouteResults } from "./components/RouteResults";
 import { SearchStatus } from "./components/SearchStatus";
+import { TrustDisclaimer } from "./components/TrustDisclaimer";
 import { useRecentSearches } from "./hooks/useRecentSearches";
 import { useRouteSearch } from "./hooks/useRouteSearch";
 
@@ -229,6 +230,8 @@ function App() {
         <RouteMap route={selectedRoute} />
 
         <RouteResults routes={routes} />
+
+        <TrustDisclaimer show={routes.length > 0} />
       </section>
     </main>
   );
