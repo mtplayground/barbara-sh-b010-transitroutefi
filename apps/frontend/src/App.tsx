@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import type { RouteSearchQuery } from "@transitroutefi/shared";
 import { RouteResults } from "./components/RouteResults";
+import { SearchStatus } from "./components/SearchStatus";
 import { useRouteSearch } from "./hooks/useRouteSearch";
 
 const timeModes = [
@@ -59,6 +60,8 @@ function App() {
   }
 
   const routes = routeSearch.data?.status === "ok" ? routeSearch.data.routes : [];
+  const noRoutesMessage =
+    routeSearch.data?.status === "no_routes" ? routeSearch.data.message : undefined;
 
   return (
     <main className="min-h-screen bg-transit-mist px-5 py-8 text-transit-ink sm:px-8 lg:px-10">
@@ -121,7 +124,7 @@ function App() {
               disabled={routeSearch.isPending}
               type="submit"
             >
-              Find Routes
+              {routeSearch.isPending ? "Finding Routes" : "Find Routes"}
             </button>
           </div>
 
@@ -162,6 +165,13 @@ function App() {
             </label>
           ) : null}
         </form>
+
+        <SearchStatus
+          errorMessage={routeSearch.error?.message}
+          isError={routeSearch.isError}
+          isLoading={routeSearch.isPending}
+          noRoutesMessage={noRoutesMessage}
+        />
 
         <RouteResults routes={routes} />
       </section>
