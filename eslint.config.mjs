@@ -48,6 +48,17 @@ export default [
     }
   },
   {
+    files: ["playwright.config.ts", "tests/e2e/**/*.ts"],
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: {
+        project: "./tsconfig.e2e.json",
+        projectService: false,
+        tsconfigRootDir: import.meta.dirname
+      }
+    }
+  },
+  {
     files: ["apps/frontend/**/*.{ts,tsx}"],
     languageOptions: {
       globals: globals.browser
