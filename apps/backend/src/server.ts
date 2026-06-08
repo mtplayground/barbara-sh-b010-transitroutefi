@@ -3,22 +3,7 @@ import express, {
   type Request,
   type Response
 } from "express";
-
-const DEFAULT_PORT = 8080;
-const HOST = "0.0.0.0";
-
-function parsePort(value: string | undefined): number {
-  if (!value) {
-    return DEFAULT_PORT;
-  }
-
-  const port = Number.parseInt(value, 10);
-  if (!Number.isInteger(port) || port <= 0 || port > 65535) {
-    throw new Error(`Invalid PORT value: ${value}`);
-  }
-
-  return port;
-}
+import { appConfig } from "./config/env.js";
 
 const app = express();
 
@@ -40,8 +25,6 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
 
 app.use(errorHandler);
 
-const port = parsePort(process.env.PORT);
-
-app.listen(port, HOST, () => {
-  console.log(`Backend listening on http://${HOST}:${port}`);
+app.listen(appConfig.port, appConfig.host, () => {
+  console.log(`Backend listening on http://${appConfig.host}:${appConfig.port}`);
 });
