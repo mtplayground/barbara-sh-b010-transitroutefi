@@ -1,4 +1,9 @@
-import type { RouteOption, TransitLine } from "@transitroutefi/shared";
+import type {
+  Fare,
+  RouteOption,
+  StepInstruction,
+  TransitLine
+} from "@transitroutefi/shared";
 
 interface RouteResultsProps {
   routes: RouteOption[];
@@ -38,6 +43,29 @@ function formatTransfers(count: number) {
   return count === 1 ? "1 transfer" : `${count} transfers`;
 }
 
+function formatDistance(meters: number) {
+  if (meters < 1000) {
+    return `${Math.round(meters)} m`;
+  }
+
+  return `${(meters / 1000).toFixed(1)} km`;
+}
+
+function formatFare(fare: Fare) {
+  if (fare.formatted) {
+    return fare.formatted;
+  }
+
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: fare.currency
+    }).format(fare.amount);
+  } catch {
+    return `${fare.amount.toFixed(2)} ${fare.currency}`;
+  }
+}
+
 function routeTransitLines(route: RouteOption): TransitLine[] {
   const lines = new Map<string, TransitLine>();
 
@@ -64,6 +92,25 @@ function lineLabel(line: TransitLine) {
   return line.shortName ?? line.name;
 }
 
+function routeSteps(route: RouteOption): StepInstruction[] {
+  return route.legs.flatMap((leg) => leg.steps);
+}
+
+function stepTypeLabel(step: StepInstruction) {
+  switch (step.type) {
+    case "walk":
+      return "Walk";
+    case "board":
+      return "Board";
+    case "ride":
+      return "Ride";
+    case "transfer":
+      return "Transfer";
+    case "alight":
+      return "Alight";
+  }
+}
+
 export function RouteResults({ routes }: RouteResultsProps) {
   if (routes.length === 0) {
     return null;
@@ -87,6 +134,7 @@ export function RouteResults({ routes }: RouteResultsProps) {
         {routes.map((route, index) => {
           const isBestRoute = index === 0;
           const transitLines = routeTransitLines(route);
+          const steps = routeSteps(route);
 
           return (
             <article
@@ -174,6 +222,68 @@ export function RouteResults({ routes }: RouteResultsProps) {
                   </span>
                 )}
               </div>
+
+              <details className="mt-5 border-t border-teal-100 pt-5">
+                <summary className="cursor-pointer rounded-md text-base font-bold text-transit-teal outline-none transition hover:text-transit-blue focus-visible:ring-4 focus-visible:ring-teal-100">
+                  View steps and fare
+                </summary>
+
+                <div className="mt-5 grid gap-5">
+                  {route.fare ? (
+                    <div>
+                      <p className="text-sm font-bold uppercase tracking-wide text-transit-muted">
+                        Estimated fare
+                      </p>
+                      <p className="mt-1 text-2xl font-bold text-transit-ink">
+                        {formatFare(route.fare)}
+                      </p>
+                    </div>
+                  ) : null}
+
+                  <ol className="grid gap-3">
+                    {steps.map((step, stepIndex) => (
+                      <li
+                        key={step.id}
+                        className="grid gap-3 rounded-md border border-teal-100 bg-teal-50/60 p-4 sm:grid-cols-[auto_1fr]"
+                      >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-white text-sm font-bold text-transit-teal">
+                          {stepIndex + 1}
+                        </div>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="text-sm font-bold uppercase tracking-wide text-transit-muted">
+                              {stepTypeLabel(step)}
+                            </p>
+                            {step.transitLine ? (
+                              <span className="rounded-md bg-white px-2 py-1 text-sm font-bold text-transit-teal">
+                                {lineLabel(step.transitLine)}
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="mt-1 text-lg font-bold text-transit-ink">
+                            {step.instruction}
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm font-bold text-transit-muted">
+                            {step.durationMinutes ? (
+                              <span>{formatMinutes(step.durationMinutes)}</span>
+                            ) : null}
+                            {step.distanceMeters ? (
+                              <span>{formatDistance(step.distanceMeters)}</span>
+                            ) : null}
+                            {step.stopCount ? (
+                              <span>
+                                {step.stopCount === 1
+                                  ? "1 stop"
+                                  : `${step.stopCount} stops`}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </details>
             </article>
           );
         })}
