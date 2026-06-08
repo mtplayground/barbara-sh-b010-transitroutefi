@@ -12,6 +12,27 @@ export interface Location {
   coordinates?: Coordinates;
 }
 
+export type RouteTimeMode = "leave_now" | "depart_at" | "arrive_by";
+
+interface RouteSearchQueryBase {
+  start: Location;
+  destination: Location;
+}
+
+export type RouteSearchQuery =
+  | (RouteSearchQueryBase & {
+      timeMode: "leave_now";
+      requestedTime?: never;
+    })
+  | (RouteSearchQueryBase & {
+      timeMode: "depart_at";
+      requestedTime: IsoDateTimeString;
+    })
+  | (RouteSearchQueryBase & {
+      timeMode: "arrive_by";
+      requestedTime: IsoDateTimeString;
+    });
+
 export type TransitVehicleType =
   | "bus"
   | "subway"

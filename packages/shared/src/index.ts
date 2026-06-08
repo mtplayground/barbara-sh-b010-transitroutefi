@@ -7,6 +7,8 @@ export type {
   RouteLeg,
   RouteLegMode,
   RouteOption,
+  RouteSearchQuery,
+  RouteTimeMode,
   StepInstruction,
   StepInstructionType,
   TransitLine,
