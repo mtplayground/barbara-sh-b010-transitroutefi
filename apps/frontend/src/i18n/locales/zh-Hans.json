@@ -1,0 +1,74 @@
+{
+  "app": {
+    "eyebrow": "公共交通路线规划",
+    "title": "查找最佳公共交通路线",
+    "intro": "在大温哥华地区规划更从容可靠的行程，清楚设置起点、目的地和出行时间。",
+    "startLabel": "起点",
+    "startPlaceholder": "Waterfront Station",
+    "destinationLabel": "目的地",
+    "destinationPlaceholder": "UBC Exchange",
+    "swap": "交换",
+    "swapAria": "交换起点和目的地",
+    "findRoutes": "查找路线",
+    "findingRoutes": "正在查找路线",
+    "travelTime": "出行时间",
+    "timeModes": {
+      "leave_now": "现在出发",
+      "depart_at": "指定出发",
+      "arrive_by": "指定到达"
+    },
+    "dateTime": "日期和时间"
+  },
+  "status": {
+    "loadingTitle": "正在查找路线",
+    "loadingBody": "正在检查可用的公共交通选项。",
+    "errorTitle": "无法加载路线。",
+    "errorBody": "请检查地点后重试。如果问题持续出现，请稍后再搜索。",
+    "noRoutesTitle": "没有可用路线",
+    "noRoutesBody": "此搜索没有可用的公共交通路线。",
+    "noRoutesHelp": "请尝试附近车站、更宽泛的目的地名称，或选择不同的出行时间。"
+  },
+  "map": {
+    "eyebrow": "路线地图",
+    "aria": "所选路线地图",
+    "markerStart": "路线起点",
+    "markerDestination": "路线终点",
+    "markerStop": "公共交通站点"
+  },
+  "results": {
+    "eyebrow": "路线排序",
+    "heading": "路线选项",
+    "bestRoute": "最佳路线",
+    "alternative": "备选路线 {{number}}",
+    "duration": "时长",
+    "departure": "出发",
+    "arrival": "到达",
+    "transfers": "换乘",
+    "walking": "步行",
+    "walkingLine": "步行",
+    "viewStepsFare": "查看步骤和票价",
+    "estimatedFare": "预估票价",
+    "durationMinutes_one": "{{count}} 分钟",
+    "durationMinutes_other": "{{count}} 分钟",
+    "durationHours_one": "{{count}} 小时",
+    "durationHours_other": "{{count}} 小时",
+    "durationHoursMinutes": "{{hours}} 小时 {{minutes}} 分钟",
+    "distanceMeters": "{{meters}} 米",
+    "distanceKilometers": "{{kilometers}} 公里",
+    "transfersCount_one": "{{count}} 次换乘",
+    "transfersCount_other": "{{count}} 次换乘",
+    "stops_one": "{{count}} 站",
+    "stops_other": "{{count}} 站",
+    "stepTypes": {
+      "walk": "步行",
+      "board": "上车",
+      "ride": "乘坐",
+      "transfer": "换乘",
+      "alight": "下车"
+    }
+  },
+  "disclaimer": {
+    "title": "公共交通信息免责声明",
+    "body": "路线建议、行程时间和票价均为估算。出行前请向公共交通运营方确认。"
+  }
+}

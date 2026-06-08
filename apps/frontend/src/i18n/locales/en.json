@@ -1,0 +1,74 @@
+{
+  "app": {
+    "eyebrow": "Public transit routing",
+    "title": "Find the Best Public Transit Route",
+    "intro": "Plan a calm, reliable ride across Metro Vancouver with clear start, destination, and travel-time choices.",
+    "startLabel": "Starting point",
+    "startPlaceholder": "Waterfront Station",
+    "destinationLabel": "Destination",
+    "destinationPlaceholder": "UBC Exchange",
+    "swap": "Swap",
+    "swapAria": "Swap start and destination",
+    "findRoutes": "Find Routes",
+    "findingRoutes": "Finding Routes",
+    "travelTime": "Travel time",
+    "timeModes": {
+      "leave_now": "Leave now",
+      "depart_at": "Depart at",
+      "arrive_by": "Arrive by"
+    },
+    "dateTime": "Date and time"
+  },
+  "status": {
+    "loadingTitle": "Finding routes",
+    "loadingBody": "Checking available transit options now.",
+    "errorTitle": "We could not load routes.",
+    "errorBody": "Check the locations and try again. If this keeps happening, wait a moment and search again.",
+    "noRoutesTitle": "No route available",
+    "noRoutesBody": "No transit route is available for this search.",
+    "noRoutesHelp": "Try a nearby station, a broader destination name, or a different travel time."
+  },
+  "map": {
+    "eyebrow": "Route map",
+    "aria": "Selected route map",
+    "markerStart": "Route start",
+    "markerDestination": "Route destination",
+    "markerStop": "Transit stop"
+  },
+  "results": {
+    "eyebrow": "Ranked routes",
+    "heading": "Route options",
+    "bestRoute": "Best route",
+    "alternative": "Alternative {{number}}",
+    "duration": "Duration",
+    "departure": "Departure",
+    "arrival": "Arrival",
+    "transfers": "Transfers",
+    "walking": "Walking",
+    "walkingLine": "Walking",
+    "viewStepsFare": "View steps and fare",
+    "estimatedFare": "Estimated fare",
+    "durationMinutes_one": "{{count}} min",
+    "durationMinutes_other": "{{count}} min",
+    "durationHours_one": "{{count}} hr",
+    "durationHours_other": "{{count}} hr",
+    "durationHoursMinutes": "{{hours}} hr {{minutes}} min",
+    "distanceMeters": "{{meters}} m",
+    "distanceKilometers": "{{kilometers}} km",
+    "transfersCount_one": "{{count}} transfer",
+    "transfersCount_other": "{{count}} transfers",
+    "stops_one": "{{count}} stop",
+    "stops_other": "{{count}} stops",
+    "stepTypes": {
+      "walk": "Walk",
+      "board": "Board",
+      "ride": "Ride",
+      "transfer": "Transfer",
+      "alight": "Alight"
+    }
+  },
+  "disclaimer": {
+    "title": "Transit information disclaimer",
+    "body": "Route suggestions, travel times, and fares are estimates. Check the transit agency before you travel."
+  }
+}
