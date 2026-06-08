@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import type {
   Fare,
   RouteOption,
@@ -9,55 +11,58 @@ interface RouteResultsProps {
   routes: RouteOption[];
 }
 
-const timeFormatter = new Intl.DateTimeFormat(undefined, {
-  hour: "numeric",
-  minute: "2-digit"
-});
-
-function formatClockTime(value: string) {
+function formatClockTime(value: string, language: string) {
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
     return value;
   }
 
-  return timeFormatter.format(date);
+  return new Intl.DateTimeFormat(language, {
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(date);
 }
 
-function formatMinutes(minutes: number) {
+function formatMinutes(minutes: number, t: TFunction) {
   if (minutes < 60) {
-    return `${minutes} min`;
+    return t("results.durationMinutes", { count: minutes });
   }
 
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
 
   if (remainingMinutes === 0) {
-    return `${hours} hr`;
+    return t("results.durationHours", { count: hours });
   }
 
-  return `${hours} hr ${remainingMinutes} min`;
+  return t("results.durationHoursMinutes", {
+    hours,
+    minutes: remainingMinutes
+  });
 }
 
-function formatTransfers(count: number) {
-  return count === 1 ? "1 transfer" : `${count} transfers`;
+function formatTransfers(count: number, t: TFunction) {
+  return t("results.transfersCount", { count });
 }
 
-function formatDistance(meters: number) {
+function formatDistance(meters: number, t: TFunction) {
   if (meters < 1000) {
-    return `${Math.round(meters)} m`;
+    return t("results.distanceMeters", { meters: Math.round(meters) });
   }
 
-  return `${(meters / 1000).toFixed(1)} km`;
+  return t("results.distanceKilometers", {
+    kilometers: (meters / 1000).toFixed(1)
+  });
 }
 
-function formatFare(fare: Fare) {
+function formatFare(fare: Fare, language: string) {
   if (fare.formatted) {
     return fare.formatted;
   }
 
   try {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat(language, {
       style: "currency",
       currency: fare.currency
     }).format(fare.amount);
@@ -96,22 +101,9 @@ function routeSteps(route: RouteOption): StepInstruction[] {
   return route.legs.flatMap((leg) => leg.steps);
 }
 
-function stepTypeLabel(step: StepInstruction) {
-  switch (step.type) {
-    case "walk":
-      return "Walk";
-    case "board":
-      return "Board";
-    case "ride":
-      return "Ride";
-    case "transfer":
-      return "Transfer";
-    case "alight":
-      return "Alight";
-  }
-}
-
 export function RouteResults({ routes }: RouteResultsProps) {
+  const { i18n, t } = useTranslation();
+
   if (routes.length === 0) {
     return null;
   }
@@ -120,13 +112,13 @@ export function RouteResults({ routes }: RouteResultsProps) {
     <section className="grid gap-4" aria-labelledby="route-results-heading">
       <div>
         <p className="text-sm font-bold uppercase tracking-wide text-transit-teal">
-          Ranked routes
+          {t("results.eyebrow")}
         </p>
         <h2
           id="route-results-heading"
           className="mt-1 text-3xl font-bold text-transit-blue sm:text-4xl"
         >
-          Route options
+          {t("results.heading")}
         </h2>
       </div>
 
@@ -154,7 +146,9 @@ export function RouteResults({ routes }: RouteResultsProps) {
                       isBestRoute ? "text-transit-green" : "text-transit-muted"
                     ].join(" ")}
                   >
-                    {isBestRoute ? "Best route" : `Alternative ${index}`}
+                    {isBestRoute
+                      ? t("results.bestRoute")
+                      : t("results.alternative", { number: index })}
                   </p>
                   <h3 className="text-2xl font-bold text-transit-ink">
                     {route.summary}
@@ -163,10 +157,10 @@ export function RouteResults({ routes }: RouteResultsProps) {
 
                 <div className="rounded-md bg-teal-50 px-4 py-3 text-left sm:text-right">
                   <p className="text-sm font-bold uppercase tracking-wide text-transit-teal">
-                    Duration
+                    {t("results.duration")}
                   </p>
                   <p className="text-3xl font-bold text-transit-blue">
-                    {formatMinutes(route.totalDurationMinutes)}
+                    {formatMinutes(route.totalDurationMinutes, t)}
                   </p>
                 </div>
               </div>
@@ -174,34 +168,34 @@ export function RouteResults({ routes }: RouteResultsProps) {
               <dl className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <dt className="text-sm font-bold uppercase tracking-wide text-transit-muted">
-                    Departure
+                    {t("results.departure")}
                   </dt>
                   <dd className="mt-1 text-xl font-bold text-transit-ink">
-                    {formatClockTime(route.departureTime)}
+                    {formatClockTime(route.departureTime, i18n.language)}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-sm font-bold uppercase tracking-wide text-transit-muted">
-                    Arrival
+                    {t("results.arrival")}
                   </dt>
                   <dd className="mt-1 text-xl font-bold text-transit-ink">
-                    {formatClockTime(route.arrivalTime)}
+                    {formatClockTime(route.arrivalTime, i18n.language)}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-sm font-bold uppercase tracking-wide text-transit-muted">
-                    Transfers
+                    {t("results.transfers")}
                   </dt>
                   <dd className="mt-1 text-xl font-bold text-transit-ink">
-                    {formatTransfers(route.transfers)}
+                    {formatTransfers(route.transfers, t)}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-sm font-bold uppercase tracking-wide text-transit-muted">
-                    Walking
+                    {t("results.walking")}
                   </dt>
                   <dd className="mt-1 text-xl font-bold text-transit-ink">
-                    {formatMinutes(route.walkingTimeMinutes)}
+                    {formatMinutes(route.walkingTimeMinutes, t)}
                   </dd>
                 </div>
               </dl>
@@ -218,24 +212,24 @@ export function RouteResults({ routes }: RouteResultsProps) {
                   ))
                 ) : (
                   <span className="rounded-md border border-teal-200 bg-teal-50 px-3 py-2 text-sm font-bold text-transit-teal">
-                    Walking
+                    {t("results.walkingLine")}
                   </span>
                 )}
               </div>
 
               <details className="mt-5 border-t border-teal-100 pt-5">
                 <summary className="cursor-pointer rounded-md text-base font-bold text-transit-teal outline-none transition hover:text-transit-blue focus-visible:ring-4 focus-visible:ring-teal-100">
-                  View steps and fare
+                  {t("results.viewStepsFare")}
                 </summary>
 
                 <div className="mt-5 grid gap-5">
                   {route.fare ? (
                     <div>
                       <p className="text-sm font-bold uppercase tracking-wide text-transit-muted">
-                        Estimated fare
+                        {t("results.estimatedFare")}
                       </p>
                       <p className="mt-1 text-2xl font-bold text-transit-ink">
-                        {formatFare(route.fare)}
+                        {formatFare(route.fare, i18n.language)}
                       </p>
                     </div>
                   ) : null}
@@ -252,7 +246,7 @@ export function RouteResults({ routes }: RouteResultsProps) {
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="text-sm font-bold uppercase tracking-wide text-transit-muted">
-                              {stepTypeLabel(step)}
+                              {t(`results.stepTypes.${step.type}`)}
                             </p>
                             {step.transitLine ? (
                               <span className="rounded-md bg-white px-2 py-1 text-sm font-bold text-transit-teal">
@@ -265,16 +259,14 @@ export function RouteResults({ routes }: RouteResultsProps) {
                           </p>
                           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm font-bold text-transit-muted">
                             {step.durationMinutes ? (
-                              <span>{formatMinutes(step.durationMinutes)}</span>
+                              <span>{formatMinutes(step.durationMinutes, t)}</span>
                             ) : null}
                             {step.distanceMeters ? (
-                              <span>{formatDistance(step.distanceMeters)}</span>
+                              <span>{formatDistance(step.distanceMeters, t)}</span>
                             ) : null}
                             {step.stopCount ? (
                               <span>
-                                {step.stopCount === 1
-                                  ? "1 stop"
-                                  : `${step.stopCount} stops`}
+                                {t("results.stops", { count: step.stopCount })}
                               </span>
                             ) : null}
                           </div>

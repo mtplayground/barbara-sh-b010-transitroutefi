@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { Coordinates, Location, RouteOption } from "@transitroutefi/shared";
 
 interface RouteMapProps {
@@ -188,6 +189,7 @@ function fitMapBounds(maps: typeof google.maps, map: google.maps.Map, data: MapD
 }
 
 export function RouteMap({ route }: RouteMapProps) {
+  const { t } = useTranslation();
   const mapElementRef = useRef<HTMLDivElement | null>(null);
   const mapData = useMemo(() => routeMapData(route), [route]);
   const [hasLoadError, setHasLoadError] = useState(false);
@@ -231,13 +233,13 @@ export function RouteMap({ route }: RouteMapProps) {
             label: "A",
             map,
             position: mapData.start,
-            title: "Route start"
+            title: t("map.markerStart")
           }),
           new maps.Marker({
             label: "B",
             map,
             position: mapData.destination,
-            title: "Route destination"
+            title: t("map.markerDestination")
           })
         );
 
@@ -254,7 +256,7 @@ export function RouteMap({ route }: RouteMapProps) {
               },
               map,
               position: stop,
-              title: "Transit stop"
+              title: t("map.markerStop")
             })
           );
         }
@@ -274,7 +276,7 @@ export function RouteMap({ route }: RouteMapProps) {
         marker.setMap(null);
       }
     };
-  }, [browserKey, mapData]);
+  }, [browserKey, mapData, t]);
 
   if (!browserKey || !mapData || hasLoadError) {
     return null;
@@ -284,14 +286,14 @@ export function RouteMap({ route }: RouteMapProps) {
     <section className="overflow-hidden rounded-lg border border-teal-100 bg-white shadow-soft">
       <div className="border-b border-teal-100 px-5 py-4 sm:px-6">
         <p className="text-sm font-bold uppercase tracking-wide text-transit-teal">
-          Route map
+          {t("map.eyebrow")}
         </p>
         <h2 className="mt-1 text-2xl font-bold text-transit-blue">{route?.summary}</h2>
       </div>
       <div
         ref={mapElementRef}
         className="h-[22rem] w-full bg-teal-50 sm:h-[28rem]"
-        aria-label="Selected route map"
+        aria-label={t("map.aria")}
       />
     </section>
   );

@@ -1,16 +1,14 @@
+import { useTranslation } from "react-i18next";
+
 interface SearchStatusProps {
-  errorMessage?: string;
+  hasNoRoutes: boolean;
   isError: boolean;
   isLoading: boolean;
-  noRoutesMessage?: string;
 }
 
-export function SearchStatus({
-  errorMessage,
-  isError,
-  isLoading,
-  noRoutesMessage
-}: SearchStatusProps) {
+export function SearchStatus({ hasNoRoutes, isError, isLoading }: SearchStatusProps) {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <section
@@ -20,9 +18,11 @@ export function SearchStatus({
         <div className="flex items-center gap-4">
           <div className="h-4 w-4 animate-pulse rounded-full bg-transit-teal" />
           <div>
-            <p className="text-lg font-bold text-transit-blue">Finding routes</p>
+            <p className="text-lg font-bold text-transit-blue">
+              {t("status.loadingTitle")}
+            </p>
             <p className="mt-1 text-readable text-transit-muted">
-              Checking available transit options now.
+              {t("status.loadingBody")}
             </p>
           </div>
         </div>
@@ -36,25 +36,26 @@ export function SearchStatus({
         className="rounded-lg border border-red-200 bg-red-50 p-5 shadow-soft"
         aria-live="polite"
       >
-        <p className="text-lg font-bold text-red-800">We could not load routes.</p>
-        <p className="mt-1 text-readable text-red-900">
-          {errorMessage ??
-            "Check the locations and try again. If this keeps happening, wait a moment and search again."}
-        </p>
+        <p className="text-lg font-bold text-red-800">{t("status.errorTitle")}</p>
+        <p className="mt-1 text-readable text-red-900">{t("status.errorBody")}</p>
       </section>
     );
   }
 
-  if (noRoutesMessage) {
+  if (hasNoRoutes) {
     return (
       <section
         className="rounded-lg border border-teal-100 bg-white p-5 shadow-soft"
         aria-live="polite"
       >
-        <p className="text-lg font-bold text-transit-blue">No route available</p>
-        <p className="mt-1 text-readable text-transit-muted">{noRoutesMessage}</p>
+        <p className="text-lg font-bold text-transit-blue">
+          {t("status.noRoutesTitle")}
+        </p>
+        <p className="mt-1 text-readable text-transit-muted">
+          {t("status.noRoutesBody")}
+        </p>
         <p className="mt-3 text-readable text-transit-muted">
-          Try a nearby station, a broader destination name, or a different travel time.
+          {t("status.noRoutesHelp")}
         </p>
       </section>
     );
