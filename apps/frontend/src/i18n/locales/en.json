@@ -19,6 +19,11 @@
     },
     "dateTime": "Date and time"
   },
+  "language": {
+    "toggleAria": "Choose language",
+    "en": "EN",
+    "zhHans": "简体中文"
+  },
   "status": {
     "loadingTitle": "Finding routes",
     "loadingBody": "Checking available transit options now.",

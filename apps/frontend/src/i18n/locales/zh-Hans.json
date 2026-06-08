@@ -19,6 +19,11 @@
     },
     "dateTime": "日期和时间"
   },
+  "language": {
+    "toggleAria": "选择语言",
+    "en": "EN",
+    "zhHans": "简体中文"
+  },
   "status": {
     "loadingTitle": "正在查找路线",
     "loadingBody": "正在检查可用的公共交通选项。",
