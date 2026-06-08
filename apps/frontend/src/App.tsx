@@ -9,7 +9,14 @@ const timeModes = [
 type TimeMode = (typeof timeModes)[number]["value"];
 
 function App() {
+  const [start, setStart] = useState("");
+  const [destination, setDestination] = useState("");
   const [timeMode, setTimeMode] = useState<TimeMode>("leave_now");
+
+  function swapLocations() {
+    setStart(destination);
+    setDestination(start);
+  }
 
   return (
     <main className="min-h-screen bg-transit-mist px-5 py-8 text-transit-ink sm:px-8 lg:px-10">
@@ -31,26 +38,39 @@ function App() {
           className="w-full rounded-lg border border-teal-100 bg-white p-5 shadow-soft sm:p-7 lg:p-8"
           onSubmit={(event) => event.preventDefault()}
         >
-          <div className="grid gap-5 lg:grid-cols-[1fr_1fr_auto] lg:items-end">
+          <div className="grid gap-5 lg:grid-cols-[1fr_auto_1fr_auto] lg:items-end">
             <label className="grid gap-2 text-base font-bold text-transit-ink">
               Starting point
               <input
                 className="min-h-14 rounded-md border border-slate-300 bg-white px-4 text-lg text-transit-ink outline-none transition focus:border-transit-teal focus:ring-4 focus:ring-teal-100"
                 name="start"
+                onChange={(event) => setStart(event.target.value)}
                 placeholder="Waterfront Station"
                 required
                 type="text"
+                value={start}
               />
             </label>
+
+            <button
+              aria-label="Swap start and destination"
+              className="min-h-12 rounded-md border border-teal-200 bg-teal-50 px-4 text-base font-bold text-transit-teal transition hover:border-transit-teal hover:bg-white focus:outline-none focus:ring-4 focus:ring-teal-100 lg:mb-0.5 lg:min-h-14"
+              type="button"
+              onClick={swapLocations}
+            >
+              Swap
+            </button>
 
             <label className="grid gap-2 text-base font-bold text-transit-ink">
               Destination
               <input
                 className="min-h-14 rounded-md border border-slate-300 bg-white px-4 text-lg text-transit-ink outline-none transition focus:border-transit-teal focus:ring-4 focus:ring-teal-100"
                 name="destination"
+                onChange={(event) => setDestination(event.target.value)}
                 placeholder="UBC Exchange"
                 required
                 type="text"
+                value={destination}
               />
             </label>
 
