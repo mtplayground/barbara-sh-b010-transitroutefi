@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import type { RouteSearchQuery } from "@transitroutefi/shared";
 import { LanguageToggle } from "./components/LanguageToggle";
+import { RecentSearches } from "./components/RecentSearches";
 import { RouteMap } from "./components/RouteMap";
 import { RouteResults } from "./components/RouteResults";
 import { SearchStatus } from "./components/SearchStatus";
+import { useRecentSearches } from "./hooks/useRecentSearches";
 import { useRouteSearch } from "./hooks/useRouteSearch";
 
 const timeModes = [
@@ -23,20 +25,40 @@ function App() {
   const [timeMode, setTimeMode] = useState<TimeMode>("leave_now");
   const [requestedTime, setRequestedTime] = useState("");
   const routeSearch = useRouteSearch();
+  const { recentSearches, saveSearch } = useRecentSearches();
+
+  useEffect(() => {
+    if (
+      routeSearch.isSuccess &&
+      routeSearch.data.status === "ok" &&
+      routeSearch.variables
+    ) {
+      saveSearch(routeSearch.variables);
+    }
+  }, [routeSearch.data, routeSearch.isSuccess, routeSearch.variables, saveSearch]);
 
   function swapLocations() {
     setStart(destination);
     setDestination(start);
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function toDateTimeLocal(value: string) {
+    const date = new Date(value);
 
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+    return localDate.toISOString().slice(0, 16);
+  }
+
+  function buildCurrentQuery() {
     const trimmedStart = start.trim();
     const trimmedDestination = destination.trim();
 
     if (!trimmedStart || !trimmedDestination) {
-      return;
+      return undefined;
     }
 
     const baseQuery = {
@@ -45,22 +67,45 @@ function App() {
     };
 
     if (timeMode === "leave_now") {
-      routeSearch.mutate({
+      return {
         ...baseQuery,
         timeMode: "leave_now"
-      });
-      return;
+      } satisfies RouteSearchQuery;
     }
 
     if (!requestedTime) {
-      return;
+      return undefined;
     }
 
-    routeSearch.mutate({
+    return {
       ...baseQuery,
       timeMode,
       requestedTime: new Date(requestedTime).toISOString()
-    } as RouteSearchQuery);
+    } as RouteSearchQuery;
+  }
+
+  function runSearch(query: RouteSearchQuery) {
+    routeSearch.mutate(query);
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const query = buildCurrentQuery();
+
+    if (query) {
+      runSearch(query);
+    }
+  }
+
+  function handleRecentSearch(query: RouteSearchQuery) {
+    setStart(query.start.label);
+    setDestination(query.destination.label);
+    setTimeMode(query.timeMode);
+    setRequestedTime(
+      query.timeMode === "leave_now" ? "" : toDateTimeLocal(query.requestedTime)
+    );
+    runSearch(query);
   }
 
   const routes = routeSearch.data?.status === "ok" ? routeSearch.data.routes : [];
@@ -172,6 +217,8 @@ function App() {
             </label>
           ) : null}
         </form>
+
+        <RecentSearches searches={recentSearches} onSelect={handleRecentSearch} />
 
         <SearchStatus
           isError={routeSearch.isError}

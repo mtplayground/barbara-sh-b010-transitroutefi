@@ -24,6 +24,10 @@
     "en": "EN",
     "zhHans": "简体中文"
   },
+  "recent": {
+    "eyebrow": "最近搜索",
+    "heading": "再次运行近期行程"
+  },
   "status": {
     "loadingTitle": "正在查找路线",
     "loadingBody": "正在检查可用的公共交通选项。",
