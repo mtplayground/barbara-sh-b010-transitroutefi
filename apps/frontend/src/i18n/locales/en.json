@@ -24,6 +24,10 @@
     "en": "EN",
     "zhHans": "简体中文"
   },
+  "recent": {
+    "eyebrow": "Recent searches",
+    "heading": "Run a recent trip"
+  },
   "status": {
     "loadingTitle": "Finding routes",
     "loadingBody": "Checking available transit options now.",
