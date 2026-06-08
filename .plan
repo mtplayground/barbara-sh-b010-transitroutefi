@@ -1,0 +1,90 @@
+# Architecture Plan
+
+## Product Scope
+
+Build "Find the Best Public Transit Route": a full-stack TypeScript app that lets users enter a starting point, destination, and time preference, then returns ranked public transit route options. The app must run locally without paid services by falling back to deterministic Metro Vancouver mock routes, and use Google Maps/Directions when configured.
+
+No `PRODUCT.md` is present in the repository at setup time, so this plan is based on the GitHub issue scopes.
+
+## Module Structure
+
+- `apps/frontend/`
+  - React + TypeScript + Vite application.
+  - `src/main.tsx` wires React, React Query, and i18n.
+  - `src/App.tsx` owns the page shell and route-search workflow.
+  - `src/api/routesClient.ts` contains the typed `POST /api/routes` client. The browser never calls Google Directions directly.
+  - `src/hooks/useRouteSearch.ts` wraps React Query mutation/query state.
+  - `src/components/` contains search form, swap control, results list, expandable route cards, loading/error/empty states, language toggle, recent searches, trust disclaimer, and map view.
+  - `src/i18n/` contains `en` and `zh-Hans` resources and persisted language initialization.
+  - `src/storage/` contains localStorage helpers for language and recent searches.
+  - `src/styles/` contains Tailwind entry CSS and small global base styles.
+
+- `apps/backend/`
+  - Node + Express + TypeScript API.
+  - `src/server.ts` creates the HTTP server and mounts middleware/routes.
+  - `src/config/env.ts` loads and validates `PORT`, `GOOGLE_MAPS_SERVER_KEY`, `VITE_GOOGLE_MAPS_BROWSER_KEY`-related expectations, and runtime flags.
+  - `src/routes/routes.ts` implements `POST /api/routes` with Zod validation, selected provider execution, ranking, and normalized response/error shapes.
+  - `src/providers/RoutingProvider.ts` defines `findRoutes(query): Promise<RouteOption[]>` and the normalizer contract.
+  - `src/providers/MockProvider.ts` returns deterministic, realistic Metro Vancouver fallback options.
+  - `src/providers/GoogleMapsProvider.ts` calls Google Directions API in transit mode and normalizes legs, steps, lines, transfers, walking time, fare, and polyline/map data.
+  - `src/providers/providerFactory.ts` chooses Google when `GOOGLE_MAPS_SERVER_KEY` exists, otherwise mock.
+  - `src/ranking/rankRoutes.ts` contains the pure route ordering function.
+  - `src/errors/` contains API error helpers and no-route handling.
+
+- `packages/shared/`
+  - Shared TypeScript package consumed by frontend and backend.
+  - `src/types.ts` defines `Location`, `RouteSearchQuery`, `RouteOption`, `RouteLeg`, `TransitLine`, `StepInstruction`, fare, map/polyline, and API response types.
+  - `src/schemas.ts` may hold Zod schemas when both runtime validation and inferred TypeScript types are useful.
+  - `src/index.ts` exports public shared contracts only.
+
+- `tests/`
+  - Unit tests live near code where practical, especially backend ranking tests.
+  - E2E tests use Playwright against the mock provider for stable local and CI runs.
+
+## File Organization and Workspace Decisions
+
+- Use npm workspaces from the repository root with `apps/frontend`, `apps/backend`, and `packages/shared`.
+- Keep one root `tsconfig.base.json`; each workspace extends it.
+- Root scripts should support `dev`, `build`, `test`, `lint`, `format`, and targeted workspace commands.
+- Backend serves the frontend production build for deployment readiness while Vite handles local frontend development.
+- Tailwind lives in the frontend package, with theme tokens for a calm blue/green accent palette and readable mobile-first typography.
+- Environment examples live in root `.env.example`; actual secrets stay untracked.
+
+## Shared Type Contracts
+
+- `RouteSearchQuery`
+  - `start`, `destination`: string or structured `Location` depending on the implemented UX stage.
+  - `timeMode`: `leave_now | depart_at | arrive_by`.
+  - `time`: optional ISO string for scheduled searches.
+
+- `RouteOption`
+  - Stable `id`, summary fields, total duration, walking duration, transfer count, departure/arrival times, legs, steps, optional fare, transit lines, and optional map data.
+
+- `StepInstruction`
+  - Mode-specific step type such as walk, board, ride, transfer, and alight, with human-readable instruction, optional stop, line, duration, distance, and encoded/polyline coordinates when available.
+
+- API responses should distinguish:
+  - success with ranked `routes`.
+  - success with no routes available.
+  - validation/provider/server errors with user-safe messages.
+
+## Dependencies Between Issues
+
+- Foundation: Issues 1, 2, and 3 establish workspace, tooling, Tailwind, and environment conventions.
+- Shared contracts: Issue 4 should precede provider, backend endpoint, frontend client, and UI result work.
+- Routing core: Issues 5, 6, 7, 8, and 9 define providers, mocks, Google integration, ranking, and provider selection.
+- API: Issue 10 depends on validation, provider selection, and ranking.
+- Frontend data flow: Issue 11 depends on the API contract.
+- UI workflow: Issues 12 through 17 build the form, swap, result cards, expandable instructions, states, and map rendering.
+- Localization and persistence: Issues 18 through 20 layer i18n, language persistence, and recent searches on top of stable UI flow.
+- Trust and quality: Issue 21 adds the bilingual disclaimer; Issues 22 and 23 add ranking unit coverage and E2E coverage; Issue 24 documents setup, Google keys, tests, and deployment.
+
+## Key Design Decisions
+
+- Keep Google-specific response parsing inside `GoogleMapsProvider`; all downstream code consumes normalized shared types.
+- Keep ranking pure and provider-agnostic so mock, Google, API, UI, and tests all exercise the same order rules.
+- Use the mock provider automatically when no server key exists so local development, demos, and Playwright tests work without external credentials.
+- Treat map data as optional on `RouteOption`; the UI must render useful route cards even when no polyline or stop coordinates are available.
+- Persist only small, non-sensitive client preferences in localStorage: language and recent successful search queries.
+- Keep backend validation at the API boundary with Zod and return predictable errors instead of leaking provider internals.
+- Use React Query for request state and caching, but keep form state local to the homepage workflow.
