@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import type { RouteSearchQuery } from "@transitroutefi/shared";
+import { RouteMap } from "./components/RouteMap";
 import { RouteResults } from "./components/RouteResults";
 import { SearchStatus } from "./components/SearchStatus";
 import { useRouteSearch } from "./hooks/useRouteSearch";
@@ -60,6 +61,7 @@ function App() {
   }
 
   const routes = routeSearch.data?.status === "ok" ? routeSearch.data.routes : [];
+  const selectedRoute = routes[0];
   const noRoutesMessage =
     routeSearch.data?.status === "no_routes" ? routeSearch.data.message : undefined;
 
@@ -172,6 +174,8 @@ function App() {
           isLoading={routeSearch.isPending}
           noRoutesMessage={noRoutesMessage}
         />
+
+        <RouteMap route={selectedRoute} />
 
         <RouteResults routes={routes} />
       </section>
