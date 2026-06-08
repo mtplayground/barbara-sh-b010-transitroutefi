@@ -3,6 +3,8 @@ node_modules/
 apps/*/dist/
 packages/*/dist/
 *.tsbuildinfo
+playwright-report/
+test-results/
 .env
 .env.local
 .env.*.local
