@@ -1,4 +1,8 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
+import type { RouteSearchQuery } from "@transitroutefi/shared";
+import { RouteResults } from "./components/RouteResults";
+import { useRouteSearch } from "./hooks/useRouteSearch";
 
 const timeModes = [
   { value: "leave_now", label: "Leave now" },
@@ -12,11 +16,49 @@ function App() {
   const [start, setStart] = useState("");
   const [destination, setDestination] = useState("");
   const [timeMode, setTimeMode] = useState<TimeMode>("leave_now");
+  const [requestedTime, setRequestedTime] = useState("");
+  const routeSearch = useRouteSearch();
 
   function swapLocations() {
     setStart(destination);
     setDestination(start);
   }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const trimmedStart = start.trim();
+    const trimmedDestination = destination.trim();
+
+    if (!trimmedStart || !trimmedDestination) {
+      return;
+    }
+
+    const baseQuery = {
+      start: { label: trimmedStart },
+      destination: { label: trimmedDestination }
+    };
+
+    if (timeMode === "leave_now") {
+      routeSearch.mutate({
+        ...baseQuery,
+        timeMode: "leave_now"
+      });
+      return;
+    }
+
+    if (!requestedTime) {
+      return;
+    }
+
+    routeSearch.mutate({
+      ...baseQuery,
+      timeMode,
+      requestedTime: new Date(requestedTime).toISOString()
+    } as RouteSearchQuery);
+  }
+
+  const routes = routeSearch.data?.status === "ok" ? routeSearch.data.routes : [];
 
   return (
     <main className="min-h-screen bg-transit-mist px-5 py-8 text-transit-ink sm:px-8 lg:px-10">
@@ -36,7 +78,7 @@ function App() {
 
         <form
           className="w-full rounded-lg border border-teal-100 bg-white p-5 shadow-soft sm:p-7 lg:p-8"
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={handleSubmit}
         >
           <div className="grid gap-5 lg:grid-cols-[1fr_auto_1fr_auto] lg:items-end">
             <label className="grid gap-2 text-base font-bold text-transit-ink">
@@ -75,7 +117,8 @@ function App() {
             </label>
 
             <button
-              className="min-h-14 rounded-md bg-transit-green px-6 text-lg font-bold text-white transition hover:bg-transit-teal focus:outline-none focus:ring-4 focus:ring-teal-100 lg:min-w-40"
+              className="min-h-14 rounded-md bg-transit-green px-6 text-lg font-bold text-white transition hover:bg-transit-teal focus:outline-none focus:ring-4 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-slate-400 lg:min-w-40"
+              disabled={routeSearch.isPending}
               type="submit"
             >
               Find Routes
@@ -111,12 +154,16 @@ function App() {
               <input
                 className="min-h-14 rounded-md border border-slate-300 bg-white px-4 text-lg text-transit-ink outline-none transition focus:border-transit-teal focus:ring-4 focus:ring-teal-100"
                 name="requestedTime"
+                onChange={(event) => setRequestedTime(event.target.value)}
                 required
                 type="datetime-local"
+                value={requestedTime}
               />
             </label>
           ) : null}
         </form>
+
+        <RouteResults routes={routes} />
       </section>
     </main>
   );
