@@ -10,7 +10,9 @@ export default [
       "apps/*/dist/**",
       "packages/*/dist/**",
       "node_modules/**",
+      "playwright-report/**",
       "package-lock.json",
+      "test-results/**",
       "*.tsbuildinfo"
     ]
   },
