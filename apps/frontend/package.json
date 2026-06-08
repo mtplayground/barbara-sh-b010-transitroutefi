@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@transitroutefi/shared": "0.1.0",
     "@vitejs/plugin-react": "^5.1.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",

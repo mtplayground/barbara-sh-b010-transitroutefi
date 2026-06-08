@@ -1,6 +1,7 @@
 target/
 node_modules/
 apps/*/dist/
+packages/*/dist/
 *.tsbuildinfo
 .env
 .env.local
