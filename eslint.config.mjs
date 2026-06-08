@@ -6,7 +6,13 @@ import tseslint from "typescript-eslint";
 
 export default [
   {
-    ignores: ["apps/*/dist/**", "node_modules/**", "package-lock.json", "*.tsbuildinfo"]
+    ignores: [
+      "apps/*/dist/**",
+      "packages/*/dist/**",
+      "node_modules/**",
+      "package-lock.json",
+      "*.tsbuildinfo"
+    ]
   },
   js.configs.recommended,
   {
